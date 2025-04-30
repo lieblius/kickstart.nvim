@@ -173,6 +173,49 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>xd', function()
+  local enabled = vim.diagnostic.is_enabled { bufnr = 0 } -- check current buffer state
+  local state_file = vim.fn.stdpath 'data' .. '/diagnostic_state'
+
+  if enabled then
+    vim.diagnostic.enable(false) -- global disable
+    vim.notify('Diagnostics disabled', vim.log.levels.INFO)
+    -- Save state to file
+    local file = io.open(state_file, 'w')
+    if file then
+      file:write 'disabled'
+      file:close()
+    end
+  else
+    vim.diagnostic.enable(true) -- global enable
+    vim.notify('Diagnostics enabled', vim.log.levels.INFO)
+    -- Save state to file
+    local file = io.open(state_file, 'w')
+    if file then
+      file:write 'enabled'
+      file:close()
+    end
+  end
+end, { desc = 'Toggle Diagnostics' })
+
+-- Load diagnostic state on startup
+local function load_diagnostic_state()
+  local state_file = vim.fn.stdpath 'data' .. '/diagnostic_state'
+  local file = io.open(state_file, 'r')
+  if file then
+    local state = file:read '*all'
+    file:close()
+    if state == 'disabled' then
+      vim.diagnostic.enable(false)
+    end
+  end
+end
+
+-- Call this function after vim is initialized
+vim.api.nvim_create_autocmd('VimEnter', {
+  callback = load_diagnostic_state,
+  once = true,
+})
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -283,18 +326,16 @@ require('lazy').setup({
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
-    config = function() -- This is the function that runs, AFTER loading
-      require('which-key').setup()
-
-      -- Document existing key chains
-      require('which-key').register {
-        ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-        ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-        ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-        ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-        ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-      }
-    end,
+    opts = {
+      -- Define key groupings and mappings
+      spec = {
+        { '<leader>c', group = '[C]ode' },
+        { '<leader>d', group = '[D]ocument' },
+        { '<leader>r', group = '[R]ename' },
+        { '<leader>s', group = '[S]earch' },
+        { '<leader>w', group = '[W]orkspace' },
+      },
+    },
   },
 
   -- NOTE: Plugins can specify dependencies.
@@ -544,6 +585,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
+        basedpyright = {},
         -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -596,6 +638,7 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format lua code
+        'basedpyright',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -822,13 +865,14 @@ require('lazy').setup({
   --
   -- require 'kickstart.plugins.debug',
   require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.gitsigns',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
