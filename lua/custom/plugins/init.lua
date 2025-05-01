@@ -4,6 +4,19 @@
 -- See the kickstart.nvim README for more information
 return {
   {
+    'ruifm/gitlinker.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    config = function()
+      require('gitlinker').setup({
+        opts = {
+          mappings = "<leader>gy",
+        }
+      })
+    end,
+  },
+  {
     'kawre/leetcode.nvim',
     dependencies = {
       'nvim-telescope/telescope.nvim',
