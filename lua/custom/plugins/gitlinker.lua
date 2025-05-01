@@ -1,13 +1,13 @@
 return {
-  'ruifm/gitlinker.nvim',
+  "ruifm/gitlinker.nvim",
   dependencies = {
-    'nvim-lua/plenary.nvim',
+    "nvim-lua/plenary.nvim",
   },
   config = function()
-    require('gitlinker').setup {
+    require("gitlinker").setup({
       opts = {
-        mappings = '<leader>gy',
+        mappings = "<leader>gy",
       },
-    }
+    })
   end,
 }

@@ -1,11 +1,11 @@
 return {
-  'kawre/leetcode.nvim',
+  "kawre/leetcode.nvim",
   dependencies = {
-    'nvim-telescope/telescope.nvim',
-    'nvim-lua/plenary.nvim',
-    'MunifTanjim/nui.nvim',
+    "nvim-telescope/telescope.nvim",
+    "nvim-lua/plenary.nvim",
+    "MunifTanjim/nui.nvim",
   },
   opts = {
-    lang = 'python3',
+    lang = "python3",
   },
 }
