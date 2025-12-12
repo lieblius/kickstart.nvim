@@ -573,6 +573,12 @@ require("lazy").setup({
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
 
+      vim.filetype.add({
+        extension = {
+          ato = "usmtf",
+          aco = "usmtf",
+        },
+      })
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --
@@ -636,6 +642,9 @@ require("lazy").setup({
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
+      ensure_installed = vim.tbl_filter(function(server)
+        return server ~= "usmtf"
+      end, ensure_installed)
       vim.list_extend(ensure_installed, {
         "stylua", -- Used to format lua code
         "basedpyright",
@@ -653,6 +662,30 @@ require("lazy").setup({
             require("lspconfig")[server_name].setup(server)
           end,
         },
+      })
+      -- USMTF Language Server setup
+      local configs = require("lspconfig.configs")
+      if not configs.usmtf then
+        configs.usmtf = {
+          default_config = {
+            cmd = { "uv", "run", "--directory", "/Users/liebl/repos/usmtf-lsp", "python", "server.py" },
+            filetypes = { "usmtf", "ato", "aco" },
+            root_dir = function(fname)
+              return require("lspconfig.util").root_pattern(".git")(fname) or vim.fn.getcwd()
+            end,
+            settings = {},
+          },
+        }
+      end
+      
+      require("lspconfig").usmtf.setup({
+        capabilities = capabilities,
+        on_attach = function(client, bufnr)
+          -- Enable semantic tokens for syntax highlighting
+          if client.server_capabilities.semanticTokensProvider then
+            vim.lsp.semantic_tokens.start(bufnr, client.id)
+          end
+        end,
       })
     end,
   },
