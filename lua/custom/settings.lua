@@ -1,6 +1,9 @@
 -- Custom settings and keymaps
 -- This file contains personal preferences that override kickstart defaults
 
+-- Disable auto-detected LSPs
+vim.lsp.enable('basedpyright', false)
+
 -- Enable Nerd Font icons
 vim.g.have_nerd_font = true
 

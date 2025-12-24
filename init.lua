@@ -344,6 +344,7 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
+        { '<leader>a', group = '[A]I/Claude' },
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
@@ -675,7 +676,7 @@ require('lazy').setup({
         -- gopls = {},
         helm_ls = {},
         -- pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = { enabled = false }, -- Handled by rustaceanvim
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
