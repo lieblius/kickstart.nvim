@@ -28,7 +28,7 @@ return {
         preview = "m:",
         set_bookmark0 = "m0",
         -- Add other mappings as needed
-      }
+      },
     })
   end,
 }

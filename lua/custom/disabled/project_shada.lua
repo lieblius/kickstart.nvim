@@ -4,18 +4,18 @@ local function get_project_root()
   local current_path = vim.api.nvim_buf_get_name(0) -- Get current buffer path
   local cwd = vim.fn.getcwd()
   local start_dir = (current_path and current_path ~= "") and vim.fn.fnamemodify(current_path, ":h") or cwd
-  
+
   -- Search upwards for .git directory
   local git_dir = vim.fn.finddir(".git", start_dir .. ";")
-  
+
   if git_dir ~= "" and vim.fn.isdirectory(git_dir) then
     -- Return the parent directory of .git (the project root)
     return vim.fn.fnamemodify(git_dir, ":h")
   end
-  
+
   -- Fallback check just based on CWD if buffer path didn't work
   git_dir = vim.fn.finddir(".git", cwd .. ";")
-   if git_dir ~= "" and vim.fn.isdirectory(git_dir) then
+  if git_dir ~= "" and vim.fn.isdirectory(git_dir) then
     return vim.fn.fnamemodify(git_dir, ":h")
   end
 
@@ -30,10 +30,10 @@ local function set_shada_path()
 
   -- Ensure base shada directories exist
   if vim.fn.isdirectory(data_path .. "/shada") == 0 then
-      vim.fn.mkdir(data_path .. "/shada", "p")
+    vim.fn.mkdir(data_path .. "/shada", "p")
   end
-   if vim.fn.isdirectory(project_shada_base_dir) == 0 then
-      vim.fn.mkdir(project_shada_base_dir, "p")
+  if vim.fn.isdirectory(project_shada_base_dir) == 0 then
+    vim.fn.mkdir(project_shada_base_dir, "p")
   end
 
   local project_root = get_project_root()
@@ -43,7 +43,7 @@ local function set_shada_path()
     -- We are inside a Git project
     local project_name = vim.fn.fnamemodify(project_root, ":t") -- Get project directory name
     if project_name == "" or project_name == "/" then -- Handle edge case for root dir name
-        project_name = "root_project" -- Or some other placeholder
+      project_name = "root_project" -- Or some other placeholder
     end
     target_shada_path = project_shada_base_dir .. project_name .. ".shada"
   else

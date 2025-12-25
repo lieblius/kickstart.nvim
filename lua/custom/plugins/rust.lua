@@ -126,11 +126,7 @@ return {
 
       -- Warn if rust-analyzer is not installed
       if vim.fn.executable("rust-analyzer") == 0 then
-        vim.notify(
-          "rust-analyzer not found in PATH, please install it.\nRun: rustup component add rust-analyzer",
-          vim.log.levels.ERROR,
-          { title = "rustaceanvim" }
-        )
+        vim.notify("rust-analyzer not found in PATH, please install it.\nRun: rustup component add rust-analyzer", vim.log.levels.ERROR, { title = "rustaceanvim" })
       end
     end,
   },
